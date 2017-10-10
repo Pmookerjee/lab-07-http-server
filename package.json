@@ -1,0 +1,21 @@
+{
+  "name": "lab-07-http-server",
+  "version": "1.0.0",
+  "description": "![cf](https://i.imgur.com/7v5ASc8.png) Lab 07: Vanilla HTTP Server ======",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "node index.js",
+    "lint": "eslint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pmookerjee/lab-07-http-server.git"
+  },
+  "author": "Paula Mookerjee",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pmookerjee/lab-07-http-server/issues"
+  },
+  "homepage": "https://github.com/Pmookerjee/lab-07-http-server#readme"
+}

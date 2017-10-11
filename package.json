@@ -4,8 +4,8 @@
   "description": "![cf](https://i.imgur.com/7v5ASc8.png) Lab 07: Vanilla HTTP Server ======",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "start": "node index.js",
+    "test": "mocha __test__/",
+    "start": "node server.js",
     "lint": "eslint"
   },
   "repository": {
@@ -17,5 +17,13 @@
   "bugs": {
     "url": "https://github.com/Pmookerjee/lab-07-http-server/issues"
   },
-  "homepage": "https://github.com/Pmookerjee/lab-07-http-server#readme"
+  "homepage": "https://github.com/Pmookerjee/lab-07-http-server#readme",
+  "devDependencies": {
+    "expect": "^21.2.1",
+    "mocha": "^4.0.1",
+    "superagent": "^3.6.3"
+  },
+  "dependencies": {
+    "cowsay": "^1.2.1"
+  }
 }

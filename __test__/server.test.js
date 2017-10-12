@@ -1,63 +1,99 @@
 'use strict';
+require('dotenv').config();
 
-const expect = require('expect');
+const chai = require('chai');
 const request = require('superagent');
-const server = require('../_server');
-const cowsay = require('cowsay');
+const server = require('../lib/_server.js');
+const fs = require('fs');
 
-const PORT = 4000;
-const host = `localhost:${PORT}`;
+const host = `localhost:${process.env.PORT}`;
+
+let expect = chai.expect;
 
 describe('http server', function() {
 
-  before(function(done) {
-    server.listen(PORT, done);
+  before((done) => {
+    server.start(process.env.PORT, () => {
+      console.log('Server up at ', process.env.PORT);
+      done();
+    });
   });
 
-  after(function(done) {
-    server.close(done);
+  after((done) => {
+    server.stop(() => done());
   });
 
   it('should respond to a GET request', function(done) {
+
+    let html = fs.readFileSync('./lib/data/cowsay.html');
+
     request
       .get(`${host}/`)
       .end((err, res) => {
-        expect(err).toBe(null);
-        expect(res.text).toBe('wow, so much get');
+        expect(err).to.be.null;
+        expect(res.status).to.equal(200);
+        expect(res.text).to.have.string('Making http requests more amooooooosing');
         done();
       });
   });
 
-  it('should process query params', function(done) {
+  it('should process the query param', function(done) {
 
     request
-      .get(`${host}/query?testing=123`)
+      .get(`${host}/cowsay?text=thisIsNOTaMOOsing`)
       .end((err, res) => {
-        expect(err).toBe(null);
-        expect(res.text).toBe('testing=123');
+        expect(err).to.be.null;
+        expect(res.status).to.equal(200);
+        expect(res.text).to.have.string('thisIsNOTaMOOsing');
         done();
       });
   });
 
-  it('should process JSON', function(done) {
+  it('should gracefully handle no given query param', function(done) {
+
     request
-      .post(`${host}/`)
-      .send({ test: 'hello world!'})
+      .get(`${host}/cowsay?`)
       .end((err, res) => {
-        expect(err).toBe(null);
-        expect(res.text).toBe('Got the JSON');
+        expect(err).to.be.null;
+        expect(res.status).to.equal(200);
+        expect(res.text).to.have.string('I need something good to say!');
+        done();
+      });
+  });
+
+  it('should process POST to cowsay', function(done) {
+    request
+      .post(`${host}/api/cowsay`)
+      .send({ text: 'I am feeling so moooorose'})
+      .end((err, res) => {
+        expect(err).to.be.null;
+        expect(res.status).to.equal(200);
+        expect(res.text).to.have.string('{ "content": "I am feeling so moooorose" }');
         done();
       });
   });
 
   it('should error on bad JSON', function(done) {
     request
-      .post(`${host}/`)
-      .send( '{test: bad json' )
+      .post(`${host}/api/cowsay`)
+      .send( '{text: absolute moonstrocity' )
       .end((err, res) => {
-        expect(err).not.toBe(null);
-        expect(res.text).toBe('bad json');
+        expect(err).not.to.be.null;
+        expect(res.status).to.equal(400);
+        expect(res.text).to.have.string('{ "ERROR": "invalid request: text query required" }');
         done();
       });
   });
+
+  it('should return a 404 on bad url', function(done) {
+    request
+      .get(`${host}/sheep`)
+      .end((err, res) => {
+        expect(err).not.to.be.null;
+        expect(res.status).to.equal(404);
+        expect(res.text).to.have.string('Resource not found');
+        done();
+      });
+  });
+
 });
